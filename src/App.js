@@ -8,9 +8,10 @@ import Navigation from './components/Navigation/Navigation';
 import Logo from './components/Logo/Logo';
 import Rank from './components/Rank/Rank';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
+import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 
 const app = new Clarifai.App({
-  apiKey: 'Your_API_Key'
+  apiKey: 'e7f6f553cc7347d6ac684801c286ef77'
 });
 
 const particlesOptions = {
@@ -29,22 +30,23 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      input: ''
+      input: '',
+      imageUrl: ''
     }
   }
 
   onInputChange = (event) => {
-    console.log(event.target.value);
+    this.setState({input: event.target.value});
   }
 
   onButtonSubmit = () => {
-    console.log('click');
-    app.models.predict("", "https://samples.clarifai.com/face-det.jpg").then(
-      function(response) {
-        // do stuff
+    this.setState({imageUrl: this.state.input});
+    app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input).then(
+      function (response) {
+        console.log(response.outputs[0].data.regions[0].region_info.bounding_box);
       },
-      function(err) {
-        // error
+      function (err) {
+        // there was an error
       }
     );
   }
@@ -58,8 +60,8 @@ class App extends Component {
         <Navigation />
         <Logo />
         <Rank />
-        <ImageLinkForm onInputChange={this.onInputChange} onSubmit={this.onButtonSubmit} />
-        {/* <FaceRecognition /> */}
+        <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
+        <FaceRecognition imageUrl={this.state.imageUrl} />
       </div>
     );
   }
