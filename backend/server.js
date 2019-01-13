@@ -1,9 +1,11 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const bcrypt = require('bcrypt-nodejs')
+const cors = require('cors')
 
 const app = express()
 app.use(bodyParser.json())
+app.use(cors())
 
 const database = {
   users: [
@@ -23,13 +25,6 @@ const database = {
       entries: 0,
       joined: new Date()
     }
-  ],
-  login: [
-    {
-      id: '987',
-      hash: '',
-      email: 'john@gmail.com'
-    }
   ]
 }
 
@@ -47,11 +42,11 @@ app.post('/signin', (req, resp) => {
     req.body.email === database.users[1].email &&
     req.body.password === database.users[1].password
   ) {
-    resp.json('logged in')
+    resp.json(database.users[1])
   } else {
     resp.status(400).json('error')
   }
-  resp.json('signin')
+  // resp.json('signin')
 })
 
 app.post('/register', (req, resp) => {
@@ -59,12 +54,10 @@ app.post('/register', (req, resp) => {
 
   bcrypt.hash(password, null, null, function (error, hash) {
     if (error == null) {
-      console.log(hash)
       database.users.push({
         id: '125',
         name: name,
         email: email,
-        password: hash,
         entries: 0,
         joined: new Date()
       })
@@ -96,6 +89,6 @@ app.put('/image', (req, resp) => {
   resp.status(404).json('no such user')
 })
 
-app.listen(3000, () => {
-  console.log('App running at port 3000')
+app.listen(3001, () => {
+  console.log('App running at port 3001')
 })
